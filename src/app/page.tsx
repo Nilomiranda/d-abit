@@ -50,8 +50,16 @@ const isHabitLogged = (currentHabitsList: HabitEntity[], { name, day, month, yea
   return habitCompletedDays.includes(habitRegistry)
 }
 
+const getSavedHabits = () => {
+  if (typeof window !== 'undefined') {
+    return JSON.parse(localStorage.getItem('HABITS_LIST') || '[]')
+  }
+
+  return []
+}
+
 export default function Home() {
-  const [habits, setHabits] = useState<HabitEntity[]>(() => JSON.parse(localStorage.getItem('HABITS_LIST') || '[]'))
+  const [habits, setHabits] = useState<HabitEntity[]>(getSavedHabits)
   const [currentMonthNumber, setCurrentMonthNumber] = useState<number>(currentMonth)
 
   const initialColor = Math.floor(Math.random()*16777215).toString(16);
