@@ -137,12 +137,12 @@ export default function Home() {
         <h2>Insert habit</h2>
 
         <form className="flex flex-col gap-y-4" action={handleSubmit}>
-          <label className="flex flex-col">
+          <label className="form-field">
             <span>Habit name</span>
             <input required name="name" type="text" placeholder="Ex.: Gym"/>
           </label>
 
-          <label className="flex flex-col">
+          <label className="form-field">
             <span>Color</span>
             <input defaultValue={`#${initialColor}`} name="color" type="color"/>
           </label>
