@@ -1,47 +1,19 @@
 'use client'
 
-import useSWRMutation from 'swr/mutation'
-
-async function createUser(url: string, { arg }) {
-  await fetch(url, {
-    method: 'POST',
-    headers: {
-      "Content-Type": 'application/json'
-    },
-    body: JSON.stringify(arg)
-  })
-}
+import Link from "next/link";
+import {createUserAccount} from "@/app/signup/actions";
+import { useFormStatus, useFormState } from 'react-dom'
 
 export default function SignUpPage() {
-  const { trigger: mutate } = useSWRMutation('/api/signup', createUser)
-
-  const handleSubmit = async (formData: FormData) => {
-    const name = formData.get('name')
-    const email = formData.get('email')
-    const password = formData.get('password')
-
-    const isFormInvalid = !name || !email || !password;
-    if (isFormInvalid) {
-      alert('Form invalid')
-      return;
-    }
-
-    const payload = { name, email, password };
-
-    try {
-      await mutate(payload)
-      alert('Account created')
-    } catch (err) {
-      console.error('Error signing up :( ')
-    }
-  }
+  const { pending } = useFormStatus();
+  const [state, formAction] = useFormState(createUserAccount, { error: { message: '' } });
 
   return (
     <main className="flex flex-col items-center w-full h-screen justify-center">
       <h1>Abitus</h1>
       <p>Build habits. Be happy.</p>
 
-      <form action={handleSubmit} className="w-full max-w-2xl mt-10 flex flex-col gap-y-6 px-4">
+      <form action={formAction} className="w-full max-w-2xl mt-10 flex flex-col gap-y-6 px-4">
         <label className="form-field">
           <span>Name</span>
           <input name="name" type="text" placeholder="John Doe" required/>
@@ -52,10 +24,14 @@ export default function SignUpPage() {
         </label>
         <label className="form-field">
           <span>Password</span>
-          <input name="password" type="password" placeholder="*******" required minLength={8} maxLength={100} />
+          <input name="password" type="password" placeholder="*******" required minLength={8} maxLength={100}/>
         </label>
 
-        <button type="submit">Create account</button>
+        <button disabled={pending} type="submit">{pending ? 'Creating account' : 'Create account'}</button>
+
+        <p>Have an account? <Link href="/login">Login</Link>.</p>
+
+        { state?.error?.message ? <span className="text-red-400 font-medium">{state.error.message}</span> : null }
       </form>
     </main>
   )
